@@ -16,14 +16,12 @@ function parseBase64(message) {
 
 exports.handler = awslambda.streamifyResponse(
 	async (event, responseStream, _context) => {
-		const PROMPT = 'Explain to a prescholer what is cloud computing.';
-		const claudPrompt = `Human: Human:${PROMPT} Assistant:`;
 
 		const params = {
-			modelId: 'anthropic.claude-v2',
+			modelId: event.modelId,
 			contentType: 'application/json',
-			accept: '*/*',
-			body: `{"prompt":"${claudPrompt}","max_tokens_to_sample":2048,"temperature":0.5,"top_k":250,"top_p":0.5,"stop_sequences":[], "anthropic_version":"bedrock-2023-05-31"}`,
+			accept: 'application/json',
+			body: JSON.stringify(event.body),
 		};
 
 		console.log(params);
@@ -31,13 +29,37 @@ exports.handler = awslambda.streamifyResponse(
 		const command = new InvokeModelWithResponseStreamCommand(params);
 
 		const response = await bedrock.send(command);
+
 		const chunks = [];
 
 		for await (const chunk of response.body) {
-			const parsed = parseBase64(chunk.chunk.bytes);
-			chunks.push(parsed.completion);
-			responseStream.write(parsed.completion);
+			if (chunk.chunk && chunk.chunk.bytes) {
+				const parsed = parseBase64(chunk.chunk.bytes);
+				console.log(parsed);
+
+				if (parsed.type === 'content_block_delta') {
+					if (parsed.delta && parsed.delta.text) {
+						const text = parsed.delta.text;
+						chunks.push(text);
+						responseStream.write(text);
+					}
+					else {
+						console.log('Delta text is missing');
+					}
+				}
+				else if (parsed.type === 'message_delta') {
+					console.log('Received message_delta:', parsed);
+					// Handle message_delta if needed
+				}
+				else {
+					console.log('Unknown parsed type:', parsed.type);
+				}
+			}
+			else {
+				console.log('Chunk data is missing or incomplete');
+			}
 		}
+
 
 		console.log(chunks.join(''));
 		responseStream.end();
