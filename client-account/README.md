@@ -1,10 +1,3 @@
-# Remote client testing environment Setup
-
-Configure the remote client testing environment in the client account. In our case, we tested with Amazon SageMaker Instances with Python environment. Execute the notebook ./client-account/remote_client_test.ipynb with the appropriate execution role.
-
-Run the notebook to test the integration and interact with the Invoke Lambda APIs from the client account. You will receive the streaming response payloads from cross account Large Language Models. 
-
-
 # Remote Client Testing Environment Setup
 
 This guide will walk you through the process of setting up a remote client testing environment in a client account to interact with cross-account Large Language Models (LLMs) using Invoke Lambda APIs.
