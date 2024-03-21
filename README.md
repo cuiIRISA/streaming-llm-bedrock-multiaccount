@@ -29,13 +29,13 @@ The architecture diagram above illustrates the interaction between the client ac
 ## Getting Started
 To get started with this solution, follow these steps:
 
-1. Deploy the adapter layer (AWS Lambda) in the Bedrock account using the source code provided in ./bedrock-account/src. 
+1. Deploy the adapter layer (AWS Lambda) in the Bedrock account using the source code provided in ./bedrock-account/src. See the read me file inside ./bedrock-account
 
 2. Set up the cross-account role and associated policy in the Bedrock account using the example policy provided in ./bedrock-account/policy_example.json. Ensure that the client account has the necessary permissions to assume this role.
 
-3. Configure the remote client testing environment in the client account by updating the notebook ./client-account/remote_client_test.ipynb with the appropriate credentials and endpoints.
+3. Configure the remote client testing environment in the client account. In our case, we tested with Amazon SageMaker Instances with Python environment. Execute the notebook ./client-account/remote_client_test.ipynb with the appropriate execution role.
 
-4. Run the notebook to test the integration and interact with the Invoke Lambda APIs from the client account.
+4. Run the notebook to test the integration and interact with the Invoke Lambda APIs from the client account. You will receive the streaming response payloads from cross account Large Language Models. 
 
 ## Contributions
 
